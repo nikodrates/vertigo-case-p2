@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_daily_activity
+    description: "Staging model for daily activity logs"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+      - name: event_date
+        description: "Date of the activity"
+        tests:
+          - not_null
+      - name: platform
+        description: "Platform (ANDROID/IOS)"
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['ANDROID', 'IOS']
+
+  - name: daily_metrics
+    description: "Aggregated daily metrics by date, country, and platform"
+    columns:
+      - name: event_date
+        tests:
+          - not_null
+      - name: country
+        tests:
+          - not_null
+      - name: platform
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['ANDROID', 'IOS']
+      - name: DAU
+        description: "Daily Active Users"
+        tests:
+          - not_null
+      - name: win_ratio
+        description: Ratio of victories to matches ended.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+              inclusive: true

@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_data
+    database: "{{ env_var('GCP_PROJECT') }}"
+    schema: raw_data
+    tables:
+      - name: daily_activity
+        description: "Raw daily activity logs loaded from CSV"

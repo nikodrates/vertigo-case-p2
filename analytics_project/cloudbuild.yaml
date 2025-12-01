@@ -1,0 +1,46 @@
+steps:
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Image'
+  args: [
+    'build', 
+    '-t', '${_DBT_IMAGE_URL}', 
+    './analytics_project' 
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push Image'
+  args: ['push', '${_DBT_IMAGE_URL}']
+
+- name: '${_DBT_IMAGE_URL}'
+  id: 'Run Models'
+  entrypoint: 'dbt'
+  args:
+  - 'run'
+  - '--target'
+  - 'prod'
+  - '--profiles-dir'
+  - '/usr/app'
+  - '--project-dir'
+  - '/usr/app'
+  env:
+  - 'GCP_PROJECT=$PROJECT_ID'  
+  - 'GCP_DATASET=marts'       
+
+- name: '${_DBT_IMAGE_URL}'
+  id: 'Run Tests'
+  entrypoint: 'dbt'
+  args:
+  - 'test'
+  - '--target'
+  - 'prod'
+  - '--profiles-dir'
+  - '/usr/app'
+  - '--project-dir'
+  - '/usr/app'
+  env:
+  - 'GCP_PROJECT=$PROJECT_ID'
+  - 'GCP_DATASET=marts'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
